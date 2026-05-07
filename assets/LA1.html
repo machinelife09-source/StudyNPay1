@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>StudyNPay – Complete Your Loan Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --bg-start:#030c1e;
+    --bg-mid:#091535;
+    --bg-end:#112158;
+    --accent:#ff914d;
+    --accent-hover:#ff7a2f;
+    --card-bg:rgba(255,255,255,0.055);
+    --card-border:rgba(255,255,255,0.10);
+    --text-primary:#ffffff;
+    --text-secondary:#b8c7f0;
+    --text-muted:#7a8dbf;
+    --input-bg:rgba(255,255,255,0.07);
+    --input-border:rgba(255,255,255,0.13);
+    --input-focus:rgba(255,145,77,0.45);
+    --success:#22d3a5;
+    --error:#ff4f6b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'DM Sans',sans-serif;
+    background:#060f28;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 0%,#1a3a8f 0%,transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 100%,#0f2060 0%,transparent 55%),
+      radial-gradient(ellipse 50% 40% at 60% 40%,#0d2870 0%,transparent 50%),
+      linear-gradient(180deg,#07122b 0%,#0b1c4a 40%,#0e2258 70%,#091535 100%);
+    background-attachment:fixed;
+    color:var(--text-primary);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4,h5,h6{font-family:'Plus Jakarta Sans',sans-serif}
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:rgba(255,255,255,.04)}
+  ::-webkit-scrollbar-thumb{background:rgba(255,145,77,.5);border-radius:10px}
+
+  /* ── GLASS CARD ── */
+  .glass{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-radius:16px;
+  }
+  .glass-sm{border-radius:12px}
+
+  /* ── NAVBAR ── */
+  #navbar{
+    position:sticky;top:0;z-index:100;
+    background:rgba(7,18,43,.82);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--card-border);
+    transition:all .3s;
+  }
+  .nav-link{
+    color:var(--text-secondary);font-size:.875rem;font-weight:500;
+    transition:color .2s;cursor:pointer;white-space:nowrap;
+  }
+  .nav-link:hover{color:#fff}
+
+  /* ── INPUT ── */
+  .inp{
+    width:100%;
+    background:var(--input-bg);
+    border:1px solid var(--input-border);
+    border-radius:10px;
+    color:#fff;
+    font-family:'DM Sans',sans-serif;
+    font-size:.875rem;
+    padding:.65rem .9rem;
+    outline:none;
+    transition:border-color .25s,box-shadow .25s;
+  }
+  .inp:focus{border-color:rgba(255,145,77,.6);box-shadow:0 0 0 3px var(--input-focus)}
+  .inp::placeholder{color:var(--text-muted)}
+  .inp-icon{position:relative}
+  .inp-icon .inp{padding-left:2.5rem}
+  .inp-icon .icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;font-size:1rem}
+  select.inp option{background:#0f1d45;color:#fff}
+  .inp-label{font-size:.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:.35rem;display:block;letter-spacing:.02em}
+  .inp-err{font-size:.75rem;color:var(--error);margin-top:.3rem;display:none}
+  .field-wrap.has-error .inp{border-color:var(--error)}
+  .field-wrap.has-error .inp-err{display:block}
+  .field-wrap.valid .inp{border-color:rgba(34,211,165,.5)}
+
+  /* ── PROGRESS ── */
+  .step-line{flex:1;height:2px;background:rgba(255,255,255,.12);position:relative;overflow:hidden}
+  .step-line-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);transition:width .5s ease}
+  .step-circle{
+    width:36px;height:36px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.8rem;font-weight:700;
+    border:2px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06);
+    color:var(--text-muted);
+    transition:all .35s;
+    flex-shrink:0;cursor:pointer;
+  }
+  .step-circle.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px rgba(255,145,77,.22)}
+  .step-circle.done{background:var(--success);border-color:var(--success);color:#fff}
+  .step-label{font-size:.62rem;font-weight:600;margin-top:.4rem;color:var(--text-muted);text-align:center;white-space:normal;word-break:break-word;max-width:68px;line-height:1.25}
+  .step-label.active{color:var(--accent)}
+  .step-label.done{color:var(--success)}
+
+  /* ── BUTTONS ── */
+  .btn-primary{
+    background:linear-gradient(135deg,#ff914d,#e86d2e);
+    color:#fff;font-weight:700;font-size:.9rem;
+    border:none;border-radius:10px;
+    padding:.72rem 1.8rem;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:.5rem;
+    transition:transform .15s,box-shadow .2s,opacity .2s;
+    box-shadow:0 4px 18px rgba(255,145,77,.35);
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,145,77,.5)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--card-border);
+    color:var(--text-secondary);font-weight:600;font-size:.88rem;
+    border-radius:10px;padding:.7rem 1.4rem;
+    cursor:pointer;
+    display:inline-flex;align-items:center;gap:.4rem;
+    transition:border-color .2s,color .2s;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .btn-ghost:hover{border-color:rgba(255,255,255,.35);color:#fff}
+
+  /* ── BADGE ── */
+  .badge-verified{
+    display:inline-flex;align-items:center;gap:.3rem;
+    background:rgba(34,211,165,.15);
+    border:1px solid rgba(34,211,165,.3);
+    color:var(--success);
+    font-size:.72rem;font-weight:700;
+    border-radius:20px;padding:.2rem .6rem;
+  }
+  .badge-otp-btn{
+    background:rgba(255,145,77,.15);
+    border:1px solid rgba(255,145,77,.3);
+    color:var(--accent);
+    font-size:.72rem;font-weight:700;
+    border-radius:20px;padding:.22rem .65rem;
+    cursor:pointer;white-space:nowrap;
+    transition:background .2s;
+  }
+  .badge-otp-btn:hover{background:rgba(255,145,77,.28)}
+
+  /* ── TRUST BADGES ── */
+  .trust-badge{
+    display:flex;align-items:center;gap:.5rem;
+    font-size:.8rem;color:var(--text-secondary);font-weight:500;
+  }
+  .trust-badge svg{color:var(--accent)}
+
+  /* ── EMI CARD ── */
+  .emi-amount{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:2.4rem;font-weight:800;
+    color:#fff;letter-spacing:-.03em;
+  }
+  .loan-amount-big{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:1.7rem;font-weight:800;
+    letter-spacing:-.02em;color:#fff;
+  }
+
+  /* ── OTP MODAL ── */
+  .otp-overlay{
+    position:fixed;inset:0;z-index:999;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .otp-overlay.open{opacity:1;pointer-events:all}
+  .otp-box{
+    background:linear-gradient(145deg,#0d1f4a,#162d6b);
+    border:1px solid var(--card-border);
+    border-radius:20px;padding:2rem;
+    width:min(380px,92vw);
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+    transform:translateY(20px);transition:transform .3s;
+  }
+  .otp-overlay.open .otp-box{transform:translateY(0)}
+  .otp-input{
+    width:52px;height:58px;text-align:center;font-size:1.5rem;font-weight:700;
+    background:var(--input-bg);border:2px solid var(--input-border);
+    border-radius:10px;color:#fff;outline:none;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    transition:border-color .2s;
+  }
+  .otp-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,145,77,.25)}
+
+  /* ── HERO ILLUSTRATION ── */
+  .hero-illustration{
+    position:relative;width:200px;height:200px;
+    filter:drop-shadow(0 20px 40px rgba(0,0,0,.4));
+  }
+  @media(max-width:768px){
+    .hero-illustration{width:130px;height:130px}
+    .emi-amount{font-size:1.8rem}
+    .loan-amount-big{font-size:1.3rem}
+  }
+
+  /* ── MOBILE NAV ── */
+  #mobile-menu{
+    display:none;
+    background:rgba(7,18,43,.97);
+    border-top:1px solid var(--card-border);
+  }
+  #mobile-menu.open{display:block}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(255,145,77,.5)}70%{box-shadow:0 0 0 10px rgba(255,145,77,0)}100%{box-shadow:0 0 0 0 rgba(255,145,77,0)}}
+  .fade-up{animation:fadeUp .45s ease forwards}
+  .fade-up-2{animation:fadeUp .45s ease .1s both}
+  .fade-up-3{animation:fadeUp .45s ease .2s both}
+
+  /* ── STAR LIST ── */
+  .why-item{display:flex;align-items:center;gap:.65rem;padding:.5rem 0;font-size:.85rem;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.05)}
+  .why-item:last-child{border-bottom:none}
+  .why-dot{width:22px;height:22px;border-radius:50%;background:rgba(255,145,77,.15);border:1px solid rgba(255,145,77,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+  /* ── FOOTER ── */
+  .footer-link{color:var(--text-muted);font-size:.82rem;cursor:pointer;transition:color .2s;display:block;margin-bottom:.5rem}
+  .footer-link:hover{color:#fff}
+  .social-icon{
+    width:34px;height:34px;border-radius:8px;
+    background:rgba(255,255,255,.07);border:1px solid var(--card-border);
+    display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:background .2s;
+    font-size:.85rem;color:var(--text-secondary);
+  }
+  .social-icon:hover{background:rgba(255,145,77,.2);color:var(--accent)}
+
+  /* ── TOOLTIP ── */
+  .info-tip{position:relative;display:inline-flex;cursor:help}
+  .info-tip::after{
+    content:attr(data-tip);
+    position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
+    background:#0d1f4a;border:1px solid var(--card-border);
+    color:var(--text-secondary);font-size:.73rem;
+    padding:.4rem .7rem;border-radius:7px;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;
+  }
+  .info-tip:hover::after{opacity:1}
+
+  /* step section fade */
+  .step-section{display:none}
+  .step-section.active-step{display:block;animation:fadeUp .35s ease}
+
+  /* placeholder step content */
+  .placeholder-step{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:3rem 1rem;gap:1rem;
+  }
+  .placeholder-step svg{opacity:.3}
+  .placeholder-step p{color:var(--text-muted);font-size:.9rem;text-align:center}
+
+  /* input with right element */
+  .inp-right{position:relative}
+  .inp-right .inp{padding-right:90px}
+  .inp-right-slot{position:absolute;right:.6rem;top:50%;transform:translateY(-50%)}
+
+  /* range input */
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:5px;
+    background:rgba(255,255,255,.12);border-radius:10px;outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:18px;height:18px;border-radius:50%;
+    background:var(--accent);cursor:pointer;
+    box-shadow:0 0 0 4px rgba(255,145,77,.25);
+  }
+
+  /* compact info row */
+  .info-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .info-row:last-child{border-bottom:none}
+  .info-row-label{font-size:.8rem;color:var(--text-muted)}
+  .info-row-val{font-size:.82rem;font-weight:600;color:#fff}
+
+  /* emi pill */
+  .emi-pill{
+    display:inline-block;background:rgba(255,145,77,.15);
+    border:1px solid rgba(255,145,77,.3);
+    border-radius:20px;padding:.15rem .7rem;
+    font-size:.75rem;font-weight:700;color:var(--accent);
+  }
+
+  /* notification toast */
+  #toast{
+    position:fixed;bottom:1.5rem;right:1.5rem;z-index:2000;
+    background:#0d1f4a;border:1px solid var(--card-border);
+    border-radius:12px;padding:.85rem 1.2rem;
+    display:flex;align-items:center;gap:.7rem;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    transform:translateY(80px);opacity:0;
+    transition:transform .35s,opacity .35s;
+    max-width:320px;
+  }
+  #toast.show{transform:translateY(0);opacity:1}
+  #toast .toast-icon{font-size:1.2rem}
+  #toast .toast-msg{font-size:.83rem;color:var(--text-secondary)}
+
+  /* gradient blob background */
+  .blob{
+    position:fixed;border-radius:50%;filter:blur(80px);
+    opacity:.22;pointer-events:none;z-index:0;
+  }
+
+  /* ── RESPONSIVE ── */
+  /* Progress bar */
+  #progress-steps{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:.1rem 0}
+  @media(max-width:767px){
+    .step-label{font-size:.56rem;max-width:54px;line-height:1.2;word-break:break-word}
+    .step-circle{width:26px;height:26px;font-size:.64rem}
+    .step-line{min-width:16px}
+    #progress-steps{gap:0!important}
+  }
+  @media(max-width:420px){
+    .step-label{display:none}
+    .step-circle{width:24px;height:24px;font-size:.6rem}
+    .step-line{min-width:10px}
+  }
+  /* Navbar */
+  @media(max-width:767px){
+    #navbar [style*="padding:.85rem"]{padding:.65rem .85rem!important}
+  }
+  /* Hero section */
+  @media(max-width:640px){
+    .hero-illustration{width:90px!important;height:90px!important}
+    section[style*="padding:2.5rem"]{padding:1.25rem .9rem .85rem!important}
+  }
+  @media(max-width:420px){
+    .hero-illustration{display:none!important}
+  }
+  /* Section padding */
+  @media(max-width:767px){
+    section[style*="padding:.5rem 1.25rem 1.5rem"]{padding:.2rem .75rem .85rem!important}
+    section[style*="padding:.5rem 1.25rem 3rem"]{padding:.2rem .75rem 1.5rem!important}
+    footer{padding:2rem .75rem 1rem!important}
+  }
+  /* Main glass card */
+  @media(max-width:767px){
+    .glass.fade-up-3{padding:1rem!important}
+  }
+  @media(max-width:420px){
+    .glass.fade-up-3{padding:.8rem!important}
+  }
+  /* Step header */
+  @media(max-width:480px){
+    #step-header h2{font-size:1.05rem!important}
+    #step-header p{font-size:.78rem!important;margin-bottom:1.1rem!important}
+  }
+  /* Form grids — always single col on mobile */
+  @media(max-width:640px){
+    #step-1 .field-grid,
+    #step-1 [style*="grid-template-columns"],
+    #step-2 [style*="grid-template-columns"],
+    #step-3 [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+    [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  }
+  /* Buttons */
+  @media(max-width:640px){
+    .btn-primary,.btn-ghost{font-size:.8rem!important;padding:.62rem .9rem!important}
+  }
+  @media(max-width:420px){
+    .btn-primary,.btn-ghost{font-size:.76rem!important;padding:.58rem .75rem!important}
+  }
+  /* Button rows — stack on small screens */
+  @media(max-width:500px){
+    .btn-row{flex-direction:column-reverse!important}
+    .btn-row .btn-primary{width:100%!important;justify-content:center!important;max-width:none!important}
+    .btn-row .btn-ghost{width:100%!important;justify-content:center!important}
+  }
+  /* EMI / loan amounts */
+  @media(max-width:480px){
+    .emi-amount{font-size:1.55rem!important}
+    .loan-amount-big{font-size:1.2rem!important}
+  }
+  /* OTP modal */
+  @media(max-width:420px){
+    .otp-input{width:40px!important;height:46px!important;font-size:1.1rem!important}
+    .otp-box{padding:1.4rem!important}
+  }
+  /* Trust strip */
+  @media(max-width:600px){
+    #trust-strip{gap:.85rem!important;overflow-x:auto;flex-wrap:nowrap!important;justify-content:flex-start!important;padding-bottom:.4rem}
+  }
+  /* ── STEP 4 MOBILE ── */
+  @media(max-width:600px){
+    .s4-gold-card{padding:1.1rem 1.2rem!important}
+    .s4-benefits-grid{grid-template-columns:repeat(3,1fr)!important}
+  }
+  @media(max-width:380px){
+    .s4-benefits-grid{grid-template-columns:repeat(2,1fr)!important}
+    .s4-benefit-icon{width:44px!important;height:44px!important}
+  }
+  /* ── STEP 5 MOBILE ── */
+  @media(max-width:600px){
+    .s5-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .s5-tab{flex:0 0 auto;min-width:64px;font-size:.68rem!important;padding:.6rem .5rem!important}
+    .s5-fee-banner{flex-direction:column!important;gap:.65rem!important}
+    .s5-fee-banner>div:last-child{flex-direction:row!important;align-items:center!important;gap:.6rem!important}
+    .s5-upi-apps{grid-template-columns:repeat(2,1fr)!important}
+    .s5-bank-grid{grid-template-columns:repeat(2,1fr)!important}
+    .s5-card-preview{padding:1rem 1.1rem!important}
+    .s5-card-num{font-size:.9rem!important;letter-spacing:.12em!important}
+    .s5-pay-btn{font-size:.9rem!important;padding:.78rem!important}
+  }
+  @media(max-width:380px){
+    .s5-tabs{gap:0}
+    .s5-tab{font-size:.64rem!important;padding:.55rem .35rem!important;min-width:52px}
+    .s5-upi-apps{grid-template-columns:repeat(2,1fr)!important}
+  }
+  /* ── SIDEBAR ── */
+  @media(max-width:899px){
+    #sidebar{flex-direction:column!important}
+    #sidebar>div{width:100%!important;flex:none!important;min-width:0!important}
+  }
+  /* ── BUTTON ROW ── */
+  @media(max-width:500px){
+    .btn-row{flex-direction:column-reverse!important;align-items:stretch!important}
+    .btn-row .btn-primary,.btn-row .btn-ghost{width:100%!important;justify-content:center!important;max-width:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- blobs -->
+<div class="blob" style="width:600px;height:600px;background:#1a4080;top:-150px;left:-200px;opacity:.35"></div>
+<div class="blob" style="width:450px;height:450px;background:#2040a0;top:35%;right:-150px;opacity:.28"></div>
+<div class="blob" style="width:400px;height:400px;background:#ff914d;bottom:8%;left:15%;opacity:.14"></div>
+<div class="blob" style="width:300px;height:300px;background:#1060c0;top:60%;left:40%;opacity:.2"></div>
+
+<!-- ─────────────── NAVBAR ─────────────── -->
+<nav id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem">
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#ff914d,#e86d2e);border-radius:8px;display:flex;align-items:center;justify-content:center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+      </div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.05rem;color:#fff">Study<span style="color:var(--accent)">N</span>Pay</span>
+    </div>
+
+    <!-- Desktop nav -->
+    <div id="desktop-nav" style="display:flex;align-items:center;gap:1.6rem">
+      <span class="nav-link">Home</span>
+      <span class="nav-link">About Us</span>
+      <span class="nav-link">How It Works</span>
+      <div style="position:relative;display:flex;align-items:center;gap:.25rem;cursor:pointer" class="nav-link">
+        Loans <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+      <span class="nav-link">Contact Us</span>
+    </div>
+
+    <!-- Right side -->
+    <div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0">
+      <button class="btn-primary" style="padding:.5rem 1rem;font-size:.8rem;display:none" id="my-app-btn" onclick="window.location.href='dashboard/user.php'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h4"/></svg>
+        My Applications
+      </button>
+      <button class="btn-primary" style="padding:.5rem 1rem;font-size:.8rem" id="my-app-btn-desk" onclick="window.location.href='dashboard/user.php'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h4"/></svg>
+        My Applications
+      </button>
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.1);border:1px solid var(--card-border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+      </div>
+      <!-- Hamburger -->
+      <button id="hamburger" style="background:transparent;border:none;cursor:pointer;color:#fff;display:none;padding:.2rem" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu">
+    <div style="padding:.75rem 1.25rem;display:flex;flex-direction:column;gap:.25rem">
+      <span class="nav-link" style="padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)">Home</span>
+      <span class="nav-link" style="padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)">About Us</span>
+      <span class="nav-link" style="padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)">How It Works</span>
+      <span class="nav-link" style="padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)">Loans</span>
+      <span class="nav-link" style="padding:.6rem 0;border-bottom:1px solid rgba(255,255,255,.05)">Contact Us</span>
+      <div style="padding:.75rem 0">
+        <button class="btn-primary" style="width:100%;justify-content:center" onclick="window.location.href='dashboard/user.php'">My Applications</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─────────────── HERO ─────────────── -->
+<section style="max-width:1200px;margin:0 auto;padding:clamp(1rem,4vw,2.5rem) clamp(.75rem,3vw,1.25rem) 1rem;position:relative;z-index:1">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+    <div class="fade-up" style="flex:1;min-width:260px">
+      <div id="hero-step-badge" style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,145,77,.12);border:1px solid rgba(255,145,77,.25);border-radius:20px;padding:.25rem .8rem;font-size:.73rem;color:var(--accent);font-weight:700;margin-bottom:.8rem;letter-spacing:.04em">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        STEP 1 OF 5
+      </div>
+      <h1 style="font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;line-height:1.2;margin-bottom:.6rem">Complete Your Loan<br/>Application</h1>
+      <p style="color:var(--text-secondary);font-size:.9rem;margin-bottom:1.2rem">Simple steps to fund your education dreams</p>
+      <div style="display:flex;flex-wrap:wrap;gap:1rem">
+        <div class="trust-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          100% Secure
+        </div>
+        <div class="trust-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Takes 2–3 Minutes
+        </div>
+        <div class="trust-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Your Data is Safe
+        </div>
+      </div>
+    </div>
+    <!-- Illustration -->
+    <div class="fade-up-2 hero-illustration" style="flex-shrink:0">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <circle cx="100" cy="100" r="95" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.08)"/>
+        <circle cx="100" cy="100" r="70" fill="rgba(255,145,77,.06)" stroke="rgba(255,145,77,.12)"/>
+        <!-- graduation cap -->
+        <rect x="65" y="85" width="70" height="8" rx="2" fill="rgba(255,145,77,.8)"/>
+        <polygon points="100,68 140,84 100,92 60,84" fill="var(--accent)" opacity=".9"/>
+        <rect x="130" y="84" width="3" height="22" rx="1.5" fill="var(--accent)"/>
+        <circle cx="131.5" cy="108" r="5" fill="var(--accent)" opacity=".7"/>
+        <!-- book -->
+        <rect x="72" y="95" width="56" height="38" rx="3" fill="rgba(59,130,246,.6)"/>
+        <rect x="98" y="95" width="2" height="38" fill="rgba(255,255,255,.25)"/>
+        <rect x="78" y="103" width="16" height="2" rx="1" fill="rgba(255,255,255,.4)"/>
+        <rect x="78" y="108" width="12" height="2" rx="1" fill="rgba(255,255,255,.3)"/>
+        <rect x="78" y="113" width="14" height="2" rx="1" fill="rgba(255,255,255,.3)"/>
+        <rect x="102" y="103" width="16" height="2" rx="1" fill="rgba(255,255,255,.4)"/>
+        <rect x="102" y="108" width="10" height="2" rx="1" fill="rgba(255,255,255,.3)"/>
+        <!-- stars -->
+        <circle cx="45" cy="55" r="3" fill="var(--accent)" opacity=".6"/>
+        <circle cx="155" cy="45" r="2" fill="#60a5fa" opacity=".7"/>
+        <circle cx="165" cy="130" r="3" fill="var(--accent)" opacity=".5"/>
+        <circle cx="35" cy="145" r="2" fill="#60a5fa" opacity=".6"/>
+        <!-- rupee -->
+        <circle cx="152" cy="78" r="14" fill="rgba(255,145,77,.2)" stroke="rgba(255,145,77,.4)"/>
+        <text x="148" y="84" font-size="14" font-weight="bold" fill="var(--accent)" font-family="sans-serif">₹</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── PROGRESS BAR ─────────────── -->
+<section style="max-width:1200px;margin:0 auto;padding:.25rem clamp(.75rem,3vw,1.25rem) 1rem;position:relative;z-index:1">
+  <div class="glass" style="padding:1rem 1.5rem 1.25rem;overflow:visible">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 2px 2px" id="progress-steps">
+      <!-- steps generated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── MAIN LAYOUT ─────────────── -->
+<style>
+  @media(min-width:900px){
+    #main-layout{flex-direction:row!important;align-items:flex-start}
+    #form-col{flex:1 1 0;min-width:0;overflow:hidden}
+    #sidebar{width:300px!important;flex:0 0 300px!important;flex-direction:column!important;flex-wrap:nowrap!important}
+    #sidebar>div{min-width:0!important;width:100%!important;flex:none!important}
+  }
+  @media(max-width:899px){
+    #main-layout{flex-direction:column!important}
+    #form-col{width:100%!important}
+    #sidebar{width:100%!important;flex-direction:column!important}
+    #sidebar>div{width:100%!important;flex:none!important;min-width:0!important}
+  }
+</style>
+<section style="max-width:1200px;margin:0 auto;padding:.25rem clamp(.75rem,3vw,1.25rem) 2.5rem;position:relative;z-index:1">
+  <div id="main-layout" style="display:flex;flex-direction:column;gap:1.5rem">
+
+    <!-- ── FORM ── -->
+    <div id="form-col" style="width:100%">
+      <div class="glass fade-up-3" style="padding:1.75rem">
+        <!-- SINGLE STEP HEADER -->
+        <div id="step-header">
+          <div style="font-size:.75rem;color:var(--accent);font-weight:700;margin-bottom:.3rem;letter-spacing:.04em">STEP 1 OF 5</div>
+          <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:.25rem">Basic Details</h2>
+          <p style="font-size:.83rem;color:var(--text-secondary);margin-bottom:1.6rem">Let's start with some basic information about you.</p>
+        </div>
+
+        <!-- STEP 1 FORM -->
+        <div id="step-1" class="step-section active-step">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.1rem">
+
+          <!-- Loan Type -->
+          <div class="field-wrap" id="fw-loan-type">
+            <label class="inp-label">Loan Type</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <select class="inp" id="loan-type" onchange="updateSummary()">
+                <option value="">Select Loan Type</option>
+                <option value="Education Loan" selected>Education Loan</option>
+                <option value="Business Loan">Business Loan</option>
+                <option value="Personal Loan">Personal Loan</option>
+              </select>
+            </div>
+            <div class="inp-err">Please select a loan type</div>
+          </div>
+
+          <!-- Full Name -->
+          <div class="field-wrap" id="fw-name">
+            <label class="inp-label">Full Name</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+              <input class="inp" id="full-name" type="text" placeholder="e.g. Rahul Sharma" oninput="validateName()" autocomplete="name"/>
+            </div>
+            <div class="inp-err">Please enter your full name</div>
+          </div>
+
+          <!-- Gender -->
+          <div class="field-wrap" id="fw-gender">
+            <label class="inp-label">Gender</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="11" r="3"/><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></svg>
+              <select class="inp" id="gender">
+                <option value="">Select Gender</option>
+                <option value="Male" selected>Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="inp-err">Please select your gender</div>
+          </div>
+
+          <!-- DOB -->
+          <div class="field-wrap" id="fw-dob">
+            <label class="inp-label">Date of Birth</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <input class="inp" id="dob" type="date" value="2001-08-15" oninput="validateDOB()"/>
+            </div>
+            <div class="inp-err" id="dob-err">You must be at least 18 years old</div>
+          </div>
+
+          <!-- Email -->
+          <div class="field-wrap" id="fw-email">
+            <label class="inp-label">Email Address</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input class="inp" id="email" type="email" placeholder="rahulsharma@email.com" value="rahulsharma@email.com" oninput="validateEmail()" autocomplete="email"/>
+            </div>
+            <div class="inp-err">Please enter a valid email address</div>
+          </div>
+
+          <!-- Phone -->
+          <div class="field-wrap" id="fw-phone">
+            <label class="inp-label">Phone Number</label>
+            <div class="inp-icon inp-right">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.06 6.06l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.82 16.21z"/></svg>
+              <input class="inp" id="phone" type="tel" placeholder="+91 98765 43210" value="+91 98765 43210" oninput="validatePhone()"/>
+              <div class="inp-right-slot" id="phone-status">
+                <span class="badge-otp-btn" onclick="openOTP()">Verify</span>
+              </div>
+            </div>
+            <div class="inp-err">Please enter a valid 10-digit phone number</div>
+          </div>
+
+          <!-- City -->
+          <div class="field-wrap" id="fw-city">
+            <label class="inp-label">City</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <input class="inp" id="city" type="text" placeholder="Bangalore" value="Bangalore" oninput="validateCity()"/>
+            </div>
+            <div class="inp-err">Please enter your city</div>
+          </div>
+
+          <!-- State -->
+          <div class="field-wrap" id="fw-state">
+            <label class="inp-label">State</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              <select class="inp" id="state">
+                <option value="">Select State</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Karnataka" selected>Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="West Bengal">West Bengal</option>
+              </select>
+            </div>
+            <div class="inp-err">Please select your state</div>
+          </div>
+
+          <!-- PAN -->
+          <div class="field-wrap" id="fw-pan">
+            <label class="inp-label">PAN Card Number</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              <input class="inp" id="pan" type="text" placeholder="ABCDE1234F" maxlength="10" oninput="this.value=this.value.toUpperCase();validatePAN()" value="ABCDE1234F"/>
+            </div>
+            <div class="inp-err">Invalid PAN format (e.g. ABCDE1234F)</div>
+          </div>
+
+          <!-- Aadhaar -->
+          <div class="field-wrap" id="fw-aadhaar">
+            <label class="inp-label">Aadhaar Number <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+            <div class="inp-icon" style="position:relative">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input class="inp" id="aadhaar" type="text" placeholder="XXXX XXXX XXXX" maxlength="14" oninput="formatAadhaar(this)" value="1234 5678 9012"/>
+            </div>
+          </div>
+
+          <!-- Offer Letter -->
+          <div class="field-wrap" id="fw-offer" style="grid-column:1/-1">
+            <label class="inp-label">Do you have an offer letter?</label>
+            <div class="inp-icon">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <select class="inp" id="offer-letter">
+                <option value="Yes" selected>Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+
+        </div><!-- end grid -->
+
+        <!-- Info note -->
+        <div style="margin-top:1.25rem;padding:.85rem 1rem;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;display:flex;align-items:flex-start;gap:.6rem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" style="flex-shrink:0;margin-top:.1rem"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style="font-size:.78rem;color:#93c5fd;line-height:1.5">Your information is secure with us and will only be used to process your loan application.</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;margin-top:1.5rem">
+          <button class="btn-ghost" onclick="showToast('💾','Progress saved! You can continue later.')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save &amp; Continue Later
+          </button>
+          <button class="btn-primary" id="save-next-btn" onclick="goToNextStep()">
+            Save &amp; Next
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        </div><!-- end step-1 -->
+
+        <!-- STEP 2 -->
+        <div id="step-2" class="step-section">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.1rem">
+
+            <!-- Course Interested In -->
+            <div class="field-wrap" id="fw-course" style="grid-column:1/-1">
+              <label class="inp-label">Course You Are Interested In</label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                <select class="inp" id="course" onchange="validateCourse()">
+                  <option value="">Select Course</option>
+                  <optgroup label="Engineering">
+                    <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                    <option value="M.Tech">M.Tech (Master of Technology)</option>
+                    <option value="B.E.">B.E. (Bachelor of Engineering)</option>
+                    <option value="Diploma Engineering">Diploma Engineering</option>
+                  </optgroup>
+                  <optgroup label="Medical">
+                    <option value="MBBS">MBBS</option>
+                    <option value="BDS">BDS (Bachelor of Dental Surgery)</option>
+                    <option value="BAMS">BAMS (Ayurvedic Medicine)</option>
+                    <option value="BHMS">BHMS (Homeopathy)</option>
+                    <option value="B.Pharm">B.Pharm</option>
+                    <option value="M.Pharm">M.Pharm</option>
+                    <option value="MD">MD / MS (Post-Graduate Medical)</option>
+                    <option value="BPT">BPT (Physiotherapy)</option>
+                    <option value="B.Sc Nursing">B.Sc Nursing</option>
+                  </optgroup>
+                  <optgroup label="Management">
+                    <option value="MBA">MBA (Master of Business Administration)</option>
+                    <option value="BBA">BBA (Bachelor of Business Administration)</option>
+                    <option value="PGDM">PGDM</option>
+                    <option value="Executive MBA">Executive MBA</option>
+                  </optgroup>
+                  <optgroup label="Science">
+                    <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                    <option value="M.Sc">M.Sc (Master of Science)</option>
+                    <option value="B.Sc IT">B.Sc IT / Computer Science</option>
+                    <option value="MCA">MCA (Master of Computer Applications)</option>
+                    <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                  </optgroup>
+                  <optgroup label="Commerce & Arts">
+                    <option value="B.Com">B.Com (Bachelor of Commerce)</option>
+                    <option value="M.Com">M.Com</option>
+                    <option value="CA">CA (Chartered Accountancy)</option>
+                    <option value="CMA">CMA / ICWA</option>
+                    <option value="CS">CS (Company Secretary)</option>
+                    <option value="BA">BA (Bachelor of Arts)</option>
+                    <option value="MA">MA (Master of Arts)</option>
+                    <option value="LLB">LLB (Law)</option>
+                    <option value="LLM">LLM (Master of Law)</option>
+                  </optgroup>
+                  <optgroup label="Architecture & Design">
+                    <option value="B.Arch">B.Arch (Architecture)</option>
+                    <option value="B.Design">B.Design</option>
+                    <option value="M.Design">M.Design</option>
+                  </optgroup>
+                  <optgroup label="Humanities & Social Science">
+                    <option value="B.Ed">B.Ed (Bachelor of Education)</option>
+                    <option value="M.Ed">M.Ed</option>
+                    <option value="MSW">MSW (Social Work)</option>
+                    <option value="BA Psychology">BA / MA Psychology</option>
+                  </optgroup>
+                  <optgroup label="Abroad / Other">
+                    <option value="MS Abroad">MS (Abroad)</option>
+                    <option value="MBA Abroad">MBA (Abroad)</option>
+                    <option value="Ph.D">Ph.D</option>
+                    <option value="Other">Other</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="inp-err">Please select a course</div>
+            </div>
+
+            <!-- Stream in Class 12 -->
+            <div class="field-wrap" id="fw-stream12">
+              <label class="inp-label">Stream Chosen in Class 12th</label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <select class="inp" id="stream-12" onchange="validateStream12()">
+                  <option value="">Select Stream</option>
+                  <option value="Science (PCM)">Science – PCM (Physics, Chemistry, Maths)</option>
+                  <option value="Science (PCB)">Science – PCB (Physics, Chemistry, Biology)</option>
+                  <option value="Science (PCMB)">Science – PCMB (All four)</option>
+                  <option value="Commerce">Commerce</option>
+                  <option value="Commerce (with Maths)">Commerce (with Maths)</option>
+                  <option value="Arts / Humanities">Arts / Humanities</option>
+                  <option value="Vocational">Vocational</option>
+                  <option value="Other">Other / Not Applicable</option>
+                </select>
+              </div>
+              <div class="inp-err">Please select your stream</div>
+            </div>
+
+            <!-- Class 10 % -->
+            <div class="field-wrap" id="fw-pct10">
+              <label class="inp-label">Class 10th Percentage / CGPA</label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M6 20V10l6-6 6 6v10"/></svg>
+                <input class="inp" id="pct-10" type="number" min="1" max="100" step="0.01" placeholder="e.g. 85.5" oninput="validatePct('pct-10','fw-pct10')"/>
+              </div>
+              <div class="inp-err">Enter a valid percentage (1–100)</div>
+            </div>
+
+            <!-- Class 12 % -->
+            <div class="field-wrap" id="fw-pct12">
+              <label class="inp-label">Class 12th Percentage / CGPA</label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M6 20V10l6-6 6 6v10"/></svg>
+                <input class="inp" id="pct-12" type="number" min="1" max="100" step="0.01" placeholder="e.g. 78.0" oninput="validatePct('pct-12','fw-pct12')"/>
+              </div>
+              <div class="inp-err">Enter a valid percentage (1–100)</div>
+            </div>
+
+            <!-- College -->
+            <div class="field-wrap" id="fw-college" style="grid-column:1/-1">
+              <label class="inp-label">College / University Name</label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <input class="inp" id="college" type="text" placeholder="e.g. IIT Delhi, AIIMS, Mumbai University"/>
+              </div>
+            </div>
+
+            <!-- Entrance Exam -->
+            <div class="field-wrap" id="fw-entrance" style="grid-column:1/-1">
+              <label class="inp-label">Last Entrance Exam Appeared <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+              <div class="inp-icon">
+                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <input class="inp" id="entrance-exam" type="text" placeholder="e.g. JEE Mains 2024, NEET 2024, CAT 2023…"/>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Info note -->
+          <div style="margin-top:1.25rem;padding:.85rem 1rem;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;display:flex;align-items:flex-start;gap:.6rem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" style="flex-shrink:0;margin-top:.1rem"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p style="font-size:.78rem;color:#93c5fd;line-height:1.5">Your education details help us find the best loan options and interest rates for your profile.</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="btn-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;margin-top:1.5rem">
+            <button class="btn-ghost" onclick="goToStep(1)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn-ghost" onclick="saveStep2Draft()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+              Save &amp; Continue Later
+            </button>
+            <button class="btn-primary" onclick="saveStep2AndNext()">
+              Save &amp; Next
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step-3" class="step-section">
+          <div style="display:grid;gap:1.1rem">
+            <div style="font-size:.78rem;color:var(--text-secondary);padding:.75rem 1rem;background:rgba(255,145,77,.07);border:1px solid rgba(255,145,77,.15);border-radius:10px">
+              Set your loan amount and tenure preferences below.
+            </div>
+            <div class="field-wrap">
+              <label class="inp-label">Loan Amount (₹)</label>
+              <input class="inp" id="loan-amount-input" type="number" min="100000" max="5000000" step="50000" value="1200000" oninput="updateSummary()"/>
+            </div>
+            <div>
+              <label class="inp-label" style="display:flex;justify-content:space-between"><span>Loan Amount</span><span style="color:var(--accent)" id="amount-label">₹12,00,000</span></label>
+              <input type="range" id="amount-slider" min="100000" max="5000000" step="50000" value="1200000" oninput="syncSlider()" style="margin-top:.5rem"/>
+            </div>
+            <div>
+              <label class="inp-label" style="display:flex;justify-content:space-between"><span>Tenure (Years)</span><span style="color:var(--accent)" id="tenure-label">15 years</span></label>
+              <input type="range" id="tenure-slider" min="1" max="20" step="1" value="15" oninput="updateSummary()" style="margin-top:.5rem"/>
+            </div>
+            <div class="btn-row" style="display:flex;gap:.75rem;margin-top:.5rem;flex-wrap:wrap;justify-content:space-between;align-items:center">
+              <button class="btn-ghost" onclick="goToStep(2)">← Back</button>
+              <button class="btn-primary" onclick="goToStep(4)">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div id="step-4" class="step-section">
+          <style>
+            /* ── STEP 4 STYLES ── */
+            .s4-title{
+              font-family:'Plus Jakarta Sans',sans-serif;
+              font-size:clamp(1.35rem,3.5vw,1.85rem);
+              font-weight:800;
+              background:linear-gradient(90deg,#f5c842,#ffd966,#e8a800);
+              -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+              background-clip:text;
+              text-align:center;margin-bottom:.25rem;
+            }
+            .s4-divider{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:.5rem 0 1.5rem}
+            .s4-divider-line{width:40px;height:2px;background:linear-gradient(90deg,transparent,#d4a017)}
+            .s4-divider-diamond{width:8px;height:8px;background:#d4a017;transform:rotate(45deg);flex-shrink:0}
+            .s4-step-row{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.9rem}
+            .s4-icon-wrap{
+              width:44px;height:44px;flex-shrink:0;
+              background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+              border-radius:50%;display:flex;align-items:center;justify-content:center;
+            }
+            .s4-guaranteed{
+              display:inline-flex;align-items:center;gap:.4rem;
+              background:rgba(255,145,77,.12);border:1.5px solid rgba(255,145,77,.4);
+              border-radius:8px;padding:.35rem .75rem;
+              font-weight:800;font-size:.95rem;color:#ff914d;
+            }
+            /* Golden card */
+            .s4-gold-card{
+              background:linear-gradient(120deg,#7a5000 0%,#c8960c 18%,#f5d060 38%,#fff5b0 50%,#f5d060 62%,#c8960c 82%,#7a5000 100%);
+              border-radius:18px;padding:1.6rem 1.9rem 1.4rem;
+              box-shadow:0 12px 48px rgba(184,134,11,.55),0 2px 12px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.4);
+              position:relative;overflow:hidden;
+              max-width:440px;width:100%;margin:1.5rem auto 0;
+              border:1.5px solid rgba(255,240,130,.5);
+            }
+            .s4-gold-card::before{
+              content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+              background:linear-gradient(135deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 45%,rgba(255,255,255,.08) 100%);
+              pointer-events:none;border-radius:18px;
+            }
+            .s4-gold-card::after{
+              content:'';position:absolute;bottom:-30px;right:-30px;
+              width:160px;height:160px;border-radius:50%;
+              background:radial-gradient(circle,rgba(255,255,255,.18) 0%,rgba(255,220,80,.12) 50%,transparent 70%);
+              pointer-events:none;
+            }
+            .s4-card-logo{display:flex;align-items:center;gap:.4rem;justify-content:flex-end;margin-bottom:1.1rem}
+            .s4-card-logo span{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.05rem;color:#2a1200;letter-spacing:.02em}
+            .s4-card-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem}
+            .s4-card-label{font-size:.7rem;font-weight:900;color:#3a1a00;letter-spacing:.1em;width:88px;flex-shrink:0;text-transform:uppercase}
+            .s4-card-colon{font-size:.85rem;font-weight:700;color:#3a1a00}
+            .s4-card-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(60,30,0,.5),rgba(60,30,0,.2));border-radius:2px}
+            /* Benefits */
+            .s4-benefits-wrap{
+              margin-top:2rem;padding:1.5rem 1.25rem 1.25rem;
+              background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+              border-radius:16px;
+            }
+            .s4-benefits-title{
+              display:flex;align-items:center;justify-content:center;gap:.6rem;
+              font-family:'Plus Jakarta Sans',sans-serif;font-size:1.25rem;font-weight:800;
+              color:#fff;margin-bottom:1.25rem;
+            }
+            .s4-benefits-title .shield-icon{
+              width:32px;height:32px;background:linear-gradient(135deg,#1a3a8f,#2a55c5);
+              border-radius:50%;display:flex;align-items:center;justify-content:center;
+              box-shadow:0 2px 8px rgba(42,85,197,.4);
+            }
+            .s4-benefits-grid{
+              display:grid;
+              grid-template-columns:repeat(6,1fr);
+              gap:.75rem;
+            }
+            @media(max-width:700px){.s4-benefits-grid{grid-template-columns:repeat(3,1fr)}}
+            @media(max-width:400px){.s4-benefits-grid{grid-template-columns:repeat(2,1fr)}}
+            .s4-benefit-item{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center}
+            .s4-benefit-icon{
+              width:52px;height:52px;
+              background:linear-gradient(145deg,#0d2060,#1a3a8f);
+              border:1.5px solid rgba(255,255,255,.12);
+              border-radius:50%;display:flex;align-items:center;justify-content:center;
+              box-shadow:0 3px 10px rgba(0,0,0,.3);
+            }
+            .s4-benefit-label{font-size:.72rem;color:var(--text-secondary);font-weight:600;line-height:1.3}
+            .s4-benefit-num{font-size:.72rem;font-weight:800;color:var(--text-secondary)}
+            /* decorative side lines on Benefits heading */
+            .s4-bene-line{flex:1;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)}
+          </style>
+
+          <!-- Heading -->
+          <div style="text-align:center;padding-bottom:.5rem">
+            <h2 class="s4-title">Processing Documentation &amp; Payment</h2>
+            <div class="s4-divider">
+              <div class="s4-divider-line"></div>
+              <div class="s4-divider-diamond"></div>
+              <div class="s4-divider-diamond" style="width:5px;height:5px;margin:0 2px"></div>
+              <div class="s4-divider-diamond"></div>
+              <div class="s4-divider-line" style="background:linear-gradient(90deg,#d4a017,transparent)"></div>
+            </div>
+          </div>
+
+          <!-- Step rows -->
+          <div style="max-width:480px;margin:0 auto">
+            <!-- Row 1: Consultation -->
+            <div class="s4-step-row">
+              <div class="s4-icon-wrap">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0c060" stroke-width="1.8"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="3" x2="8" y2="21"/><path d="M12 8h4M12 12h4M12 16h4"/></svg>
+              </div>
+              <div style="padding-top:.35rem">
+                <span style="font-size:.95rem;color:var(--text-secondary)">Hassle free consultation from <strong style="color:#fff">10 banks/NBCF</strong></span>
+              </div>
+            </div>
+            <!-- Dot connector -->
+            <div style="padding-left:22px;margin-bottom:.6rem"><div style="width:4px;height:18px;background:rgba(255,255,255,.15);border-radius:2px;margin-left:0"></div></div>
+            <!-- Row 2: Guaranteed -->
+            <div class="s4-step-row">
+              <div class="s4-icon-wrap" style="border-color:rgba(255,145,77,.4);background:rgba(255,145,77,.1)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+              </div>
+              <div style="padding-top:.3rem">
+                <span class="s4-guaranteed">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                  (Guaranteed Loan Approval)
+                </span>
+              </div>
+            </div>
+            <!-- Dot connector -->
+            <div style="padding-left:22px;margin-bottom:.6rem"><div style="width:4px;height:18px;background:rgba(255,255,255,.15);border-radius:2px"></div></div>
+            <!-- Row 3: Payment -->
+            <div class="s4-step-row">
+              <div class="s4-icon-wrap" style="border-color:rgba(212,160,23,.4);background:rgba(212,160,23,.1)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v2m0 8v2M9.5 9.5c.5-1 1.5-1.5 2.5-1.5s2 .7 2 1.8c0 2-4 2.2-4 4.2H14"/></svg>
+              </div>
+              <div style="padding-top:.3rem;font-size:.95rem;color:var(--text-secondary)">
+                Pay a processing fees of <strong style="color:#fff">₹5</strong> and get a loan and <strong style="color:#f5c842">Student Golden Card.</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Golden Card -->
+          <div style="display:flex;justify-content:center">
+            <div class="s4-gold-card">
+              <!-- Top row: chip + logo -->
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+                <!-- EMV Chip -->
+                <div style="width:42px;height:32px;background:linear-gradient(135deg,#c8960c,#f5d060,#9a6e00);border-radius:5px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;padding:4px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+                  <div style="background:rgba(60,30,0,.3);border-radius:2px"></div><div style="background:rgba(60,30,0,.3);border-radius:2px"></div><div style="background:rgba(60,30,0,.3);border-radius:2px"></div>
+                  <div style="background:rgba(60,30,0,.3);border-radius:2px;grid-column:1/-1;height:6px"></div>
+                  <div style="background:rgba(60,30,0,.3);border-radius:2px"></div><div style="background:rgba(60,30,0,.3);border-radius:2px"></div><div style="background:rgba(60,30,0,.3);border-radius:2px"></div>
+                </div>
+                <div class="s4-card-logo" style="margin-bottom:0">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#2a1200"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                  <span>StudyNPay</span>
+                </div>
+              </div>
+              <!-- Fields -->
+              <div class="s4-card-row">
+                <span class="s4-card-label">NAME</span>
+                <span class="s4-card-colon">:</span>
+                <div class="s4-card-line"></div>
+              </div>
+              <div class="s4-card-row">
+                <span class="s4-card-label">DOB</span>
+                <span class="s4-card-colon">:</span>
+                <div class="s4-card-line"></div>
+              </div>
+              <div class="s4-card-row">
+                <span class="s4-card-label">PHONE</span>
+                <span class="s4-card-colon">:</span>
+                <div class="s4-card-line"></div>
+              </div>
+              <div class="s4-card-row" style="margin-bottom:.5rem">
+                <span class="s4-card-label">STUDENT ID</span>
+                <span class="s4-card-colon">:</span>
+                <div class="s4-card-line"></div>
+              </div>
+              <!-- Bottom: contactless icon -->
+              <div style="display:flex;justify-content:flex-end;margin-top:.3rem">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(60,30,0,.55)" stroke-width="1.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="rgba(60,30,0,.55)" stroke="none"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benefits Section -->
+          <div class="s4-benefits-wrap">
+            <div class="s4-benefits-title">
+              <div class="s4-bene-line"></div>
+              <div class="shield-icon" style="width:32px;height:32px;background:linear-gradient(135deg,#1a3a8f,#2a55c5);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(42,85,197,.4);flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5c842" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span>Benefits</span>
+              <div class="s4-bene-line"></div>
+            </div>
+
+            <div class="s4-benefits-grid">
+              <!-- 1: 1:1 Consultation -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b0c4f8" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">1. 1:1</div>
+                  <div class="s4-benefit-label">Consultation</div>
+                </div>
+              </div>
+              <!-- 2: Student Insurance -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b0c4f8" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">2. Student</div>
+                  <div class="s4-benefit-label">Insurance Benefits</div>
+                </div>
+              </div>
+              <!-- 3: Scholarship -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b0c4f8" stroke-width="1.8"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">3. Scholarship</div>
+                  <div class="s4-benefit-label">Advantages<br><span style="font-size:.68rem;color:var(--text-muted)">(both Govt and private)</span></div>
+                </div>
+              </div>
+              <!-- 4: Education newsletter -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b0c4f8" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">4. Education</div>
+                  <div class="s4-benefit-label">news letter subscription</div>
+                </div>
+              </div>
+              <!-- 5: 24x7 -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon" style="position:relative">
+                  <span style="font-size:.72rem;font-weight:800;color:#b0c4f8;line-height:1">24<br>7</span>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">5. 24X7</div>
+                  <div class="s4-benefit-label">customer service</div>
+                </div>
+              </div>
+              <!-- 6: Free Consultations -->
+              <div class="s4-benefit-item">
+                <div class="s4-benefit-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b0c4f8" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.06 6.06l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.82 16.21z"/></svg>
+                </div>
+                <div>
+                  <div class="s4-benefit-num">6. Free</div>
+                  <div class="s4-benefit-label">Consultations</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nav buttons -->
+          <div class="btn-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;margin-top:1.75rem">
+            <button class="btn-ghost" onclick="goToStep(3)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              Back
+            </button>
+            <button class="btn-primary" onclick="goToStep(5)">
+              Pay ₹5 &amp; Continue
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div id="step-5" class="step-section">
+          <style>
+            .s5-label{font-size:.68rem;font-weight:800;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;display:block}
+            .s5-summary{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin-bottom:1.25rem}
+            .s5-sum-row{display:flex;justify-content:space-between;align-items:center;padding:.65rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.05);font-size:.84rem;gap:1.5rem}
+            .s5-sum-row:last-child{border-bottom:none}
+            .s5-sum-key{color:var(--text-muted)}
+            .s5-sum-val{font-weight:700;color:#fff}
+            /* Fee banner */
+            .s5-fee-banner{
+              background:linear-gradient(135deg,rgba(255,145,77,.18) 0%,rgba(255,100,30,.08) 100%);
+              border:1px solid rgba(255,145,77,.3);border-radius:14px;
+              padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;
+              margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap;
+            }
+            /* Pay method tabs */
+            .s5-tabs{display:flex;gap:0;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;margin-bottom:1.25rem;background:rgba(255,255,255,.03)}
+            .s5-tab{flex:1;padding:.65rem .4rem;text-align:center;cursor:pointer;font-size:.72rem;font-weight:700;color:var(--text-muted);transition:all .2s;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap;min-width:0}
+            .s5-tab:last-child{border-right:none}
+            .s5-tab.active{background:linear-gradient(135deg,rgba(255,145,77,.25),rgba(255,100,30,.15));color:#fff;border-bottom:2px solid var(--accent)}
+            .s5-tab svg{display:block;margin:0 auto .2rem}
+            /* Panel */
+            .s5-panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.1rem;margin-bottom:1.1rem}
+            /* UPI app grid */
+            .s5-upi-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+            @media(max-width:400px){.s5-upi-apps{grid-template-columns:repeat(2,1fr)}}
+            .s5-upi-app{border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.75rem .5rem;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.04)}
+            .s5-upi-app:hover{border-color:rgba(255,145,77,.4);background:rgba(255,145,77,.08)}
+            .s5-upi-app.sel{border-color:var(--accent);background:rgba(255,145,77,.14);box-shadow:0 0 0 2px rgba(255,145,77,.2)}
+            .s5-upi-app-icon{width:36px;height:36px;border-radius:8px;margin:0 auto .4rem;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+            .s5-upi-app-name{font-size:.68rem;font-weight:700;color:var(--text-secondary)}
+            .s5-upi-app.sel .s5-upi-app-name{color:#fff}
+            /* virtual card preview */
+            .s5-card-preview{
+              background:linear-gradient(135deg,#1a2d6b 0%,#243a8f 50%,#1a2d6b 100%);
+              border:1px solid rgba(255,255,255,.15);border-radius:14px;
+              padding:1.25rem 1.4rem;margin-bottom:1rem;
+              position:relative;overflow:hidden;
+              box-shadow:0 8px 32px rgba(0,0,0,.4);
+            }
+            .s5-card-preview::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 50%);border-radius:14px}
+            .s5-card-chip{width:36px;height:28px;background:linear-gradient(135deg,#c8b050,#f0d060);border-radius:4px;margin-bottom:.85rem}
+            .s5-card-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.2em;color:#fff;margin-bottom:.75rem}
+            .s5-card-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+            .s5-card-label-sm{font-size:.58rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem}
+            .s5-card-val{font-size:.8rem;font-weight:700;color:#fff}
+            /* bank grid */
+            .s5-bank-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+            @media(max-width:400px){.s5-bank-grid{grid-template-columns:repeat(2,1fr)}}
+            .s5-bank-item{border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.7rem .5rem;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.04)}
+            .s5-bank-item:hover,.s5-bank-item.sel{border-color:rgba(255,145,77,.45);background:rgba(255,145,77,.1);color:#fff}
+            .s5-bank-item .bname{font-size:.72rem;font-weight:700;color:var(--text-secondary);margin-top:.3rem}
+            .s5-bank-item.sel .bname{color:#fff}
+            .s5-bank-logo{width:36px;height:36px;border-radius:8px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800}
+            /* wallet */
+            .s5-wallet-list{display:grid;gap:.55rem}
+            .s5-wallet-item{display:flex;align-items:center;gap:.85rem;padding:.8rem 1rem;border:1.5px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03)}
+            .s5-wallet-item:hover,.s5-wallet-item.sel{border-color:rgba(255,145,77,.4);background:rgba(255,145,77,.08)}
+            .s5-wallet-logo{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+            /* emi */
+            .s5-emi-option{display:flex;align-items:center;gap:.85rem;padding:.85rem 1rem;border:1.5px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:.55rem}
+            .s5-emi-option:hover{border-color:rgba(255,145,77,.3);background:rgba(255,145,77,.06)}
+            .s5-emi-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
+            /* QR */
+            .s5-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:.85rem;padding:.75rem 0}
+            .s5-qr-box{background:#fff;border-radius:16px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+            .s5-qr-timer{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--accent);font-weight:700}
+            /* security footer */
+            .s5-sec-row{display:flex;align-items:center;justify-content:center;gap:1.25rem;flex-wrap:wrap;padding:.85rem 0;border-top:1px solid rgba(255,255,255,.06);margin-top:.75rem}
+            .s5-sec-item{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:var(--text-muted)}
+            /* pay btn */
+            .s5-pay-btn{width:100%;justify-content:center;padding:.85rem;font-size:1rem;font-weight:800;letter-spacing:.02em;border-radius:12px;box-shadow:0 6px 28px rgba(255,145,77,.45)}
+          </style>
+
+          <div>
+            <!-- Heading -->
+            <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:1.5rem">
+              <div style="width:40px;height:40px;background:linear-gradient(135deg,rgba(255,145,77,.25),rgba(255,100,30,.15));border:1px solid rgba(255,145,77,.35);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div>
+                <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:.1rem">Review &amp; Pay</h3>
+                <p style="font-size:.78rem;color:var(--text-muted)">Confirm your details and complete payment</p>
+              </div>
+            </div>
+
+            <!-- Application Summary -->
+            <span class="s5-label">Application Summary</span>
+            <div class="s5-summary">
+              <div id="review-content"></div>
+            </div>
+
+            <!-- Fee Banner -->
+            <div class="s5-fee-banner">
+              <div>
+                <div style="font-size:.7rem;color:rgba(255,145,77,.7);font-weight:700;letter-spacing:.08em;margin-bottom:.3rem">PROCESSING FEE</div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2rem;font-weight:900;color:#fff;line-height:1">₹5</div>
+                <div style="font-size:.72rem;color:var(--text-muted);margin-top:.3rem">One-time · Non-refundable · Includes Student Golden Card</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:.5rem;align-items:flex-end">
+                <div style="background:rgba(34,211,165,.12);border:1px solid rgba(34,211,165,.3);border-radius:8px;padding:.5rem .85rem;text-align:center">
+                  <div style="font-size:.68rem;font-weight:800;color:var(--success);letter-spacing:.05em">✓ GUARANTEED</div>
+                  <div style="font-size:.65rem;color:var(--text-muted)">Loan Approval</div>
+                </div>
+                <div style="font-size:.68rem;color:var(--text-muted);text-align:right">Razorpay Secured</div>
+              </div>
+            </div>
+
+            <!-- Terms &amp; Conditions -->
+            <div style="margin-bottom:1.25rem">
+              <h4 style="font-size:.85rem;font-weight:800;color:#fff;margin-bottom:.65rem;display:flex;align-items:center;gap:.45rem">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Terms &amp; Conditions
+              </h4>
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.1rem">
+                <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.55rem">
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>The ₹5 processing fee is collected for testing purposes only and is non-refundable.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>Loan approval is subject to verification of documents and eligibility criteria set by the lending partner.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>StudyNPay acts as a facilitator and is not directly responsible for loan disbursement or interest rates.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>By proceeding, you confirm that all information submitted is accurate and truthful.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>StudyNPay reserves the right to cancel the application if any information is found to be false or misleading.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Privacy Policy -->
+            <div style="margin-bottom:1.25rem">
+              <h4 style="font-size:.85rem;font-weight:800;color:#fff;margin-bottom:.65rem;display:flex;align-items:center;gap:.45rem">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Privacy Policy
+              </h4>
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1rem 1.1rem">
+                <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.55rem">
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>Your personal data is collected solely for the purpose of processing your loan application.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>We do not sell or share your information with third parties without your explicit consent, except as required by lending partners for loan processing.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>All data is encrypted and stored securely in compliance with applicable data protection laws.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>You have the right to request access, correction, or deletion of your personal data at any time by contacting us.</li>
+                  <li style="font-size:.78rem;color:var(--text-secondary);display:flex;align-items:flex-start;gap:.5rem"><span style="color:var(--accent);font-weight:700;flex-shrink:0">•</span>Cookies and usage data may be collected to improve your experience on our platform.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Security Row -->
+            <div class="s5-sec-row">
+              <div class="s5-sec-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>256-bit SSL</div>
+              <div class="s5-sec-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PCI DSS</div>
+              <div class="s5-sec-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>RBI Compliant</div>
+              <div class="s5-sec-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>3D Secure</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-row" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;margin-top:.5rem">
+              <button class="btn-ghost" onclick="goToStep(4)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back
+              </button>
+              <button class="btn-primary s5-pay-btn" onclick="handleSubmit()" style="flex:1;max-width:280px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Pay ₹5 &amp; Submit
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end glass card -->
+    </div><!-- end left -->
+
+    <!-- ── SIDEBAR ── -->
+    <div id="sidebar" style="width:100%;display:flex;flex-wrap:wrap;gap:1.1rem;align-items:flex-start">
+
+      <!-- Loan Summary -->
+      <div class="glass" style="padding:1.4rem;flex:1.2;min-width:280px">
+        <h3 style="font-size:.95rem;font-weight:700;margin-bottom:1rem">Loan Summary</h3>
+
+        <!-- Big loan amount -->
+        <div style="text-align:center;padding:1.1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:1rem">
+          <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.3rem;letter-spacing:.04em">LOAN AMOUNT</div>
+          <div class="loan-amount-big" id="summary-amount">₹12,00,000</div>
+        </div>
+
+        <!-- Inline summary rows -->
+        <div style="margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.82rem;color:var(--text-muted)">Loan Type</span>
+          <span style="font-size:.82rem;font-weight:700;color:#fff" id="sb-loan-type-display">Education Loan</span>
+        </div>
+        <div style="margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.82rem;color:var(--text-muted)">Interest Rate</span>
+          <span style="font-size:.82rem;font-weight:700;color:#fff">10.49% <span style="background:rgba(255,145,77,.15);border:1px solid rgba(255,145,77,.3);border-radius:20px;padding:.1rem .45rem;font-size:.68rem;color:var(--accent)">p.a.</span></span>
+        </div>
+        <div style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:.82rem;color:var(--text-muted)">Tenure</span>
+          <span style="font-size:.82rem;font-weight:700;color:#fff">15 Years</span>
+        </div>
+
+        <!-- Hidden selects (keep for JS compatibility) -->
+        <div style="display:none">
+          <select id="sb-loan-type" onchange="updateSummary()"><option value="Education Loan" selected>Education Loan</option><option value="Personal Loan">Personal Loan</option><option value="Business Loan">Business Loan</option></select>
+          <select id="sb-interest-rate" onchange="updateSummary()"><option value="8.50">8.50%</option><option value="9.00">9.00%</option><option value="9.50">9.50%</option><option value="10.00">10.00%</option><option value="10.49" selected>10.49%</option><option value="11.00">11.00%</option><option value="12.00">12.00%</option><option value="13.00">13.00%</option><option value="14.00">14.00%</option><option value="15.00">15.00%</option></select>
+          <select id="sb-tenure" onchange="updateSummary()"><option value="5">5 Years</option><option value="10">10 Years</option><option value="15" selected>15 Years</option><option value="20">20 Years</option></select>
+          <span id="s-rate-label"></span><span id="s-tenure"></span>
+        </div>
+
+        <!-- EMI -->
+        <div style="padding:1rem;background:rgba(255,145,77,.08);border:1px solid rgba(255,145,77,.2);border-radius:12px">
+          <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.2rem;letter-spacing:.04em">ESTIMATED EMI</div>
+          <div style="display:flex;align-items:baseline;gap:.4rem">
+            <div class="emi-amount" id="emi-display">₹13,765</div>
+            <span style="font-size:.8rem;color:var(--text-secondary);font-weight:600">/ month</span>
+          </div>
+          <button onclick="showToast('📊','EMI breakdown feature coming soon!')" style="margin-top:.7rem;background:transparent;border:none;color:var(--accent);font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem;padding:0;font-family:'DM Sans',sans-serif">
+            View EMI Breakdown
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Loan Amount Slider -->
+        <div style="margin-top:1rem">
+          <label class="inp-label" style="display:flex;justify-content:space-between"><span>Loan Amount</span><span style="color:var(--accent)" id="sidebar-amount-label">₹12,00,000</span></label>
+          <input type="range" id="sidebar-amount" min="100000" max="5000000" step="50000" value="1200000" oninput="sidebarSlider()" style="margin-top:.4rem"/>
+        </div>
+      </div>
+
+      <!-- Help Card -->
+      <div class="glass" style="padding:1.3rem;flex:1;min-width:220px">
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem">
+          <div style="width:36px;height:36px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:.9rem">Need Help?</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">Our loan experts are here to help you 24/7</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;padding:.65rem 1rem;font-size:.83rem" onclick="showToast('💬','Connecting you to an expert...')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat with Expert
+        </button>
+      </div>
+
+      <!-- Why StudyNPay -->
+      <div class="glass" style="padding:1.3rem;flex:1;min-width:220px">
+        <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.9rem">Why StudyNPay?</h3>
+        <div class="why-item">
+          <div class="why-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+          Quick Approval
+        </div>
+        <div class="why-item">
+          <div class="why-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+          Minimal Documentation
+        </div>
+        <div class="why-item">
+          <div class="why-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          Flexible Repayment
+        </div>
+        <div class="why-item">
+          <div class="why-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+          Trusted by 50,000+ Students
+        </div>
+      </div>
+
+    </div><!-- end sidebar -->
+  </div>
+</section>
+
+<!-- ─────────────── TRUST STRIP ─────────────── -->
+<section style="background:rgba(255,255,255,.035);border-top:1px solid var(--card-border);border-bottom:1px solid var(--card-border);padding:1.2rem 1.25rem;position:relative;z-index:1">
+  <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2rem">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div>
+        <div style="font-size:.82rem;font-weight:700">Your Trust is Our Priority</div>
+        <div style="font-size:.72rem;color:var(--text-muted)">We use bank-level security to protect your data</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="background:rgba(34,211,165,.1);border:1px solid rgba(34,211,165,.3);border-radius:8px;padding:.4rem .7rem;text-align:center">
+        <div style="font-size:.65rem;color:var(--success);font-weight:700">256-bit</div>
+        <div style="font-size:.6rem;color:var(--text-muted)">SSL Security</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:.4rem .7rem;text-align:center">
+        <div style="font-size:.65rem;color:#60a5fa;font-weight:700">ISO</div>
+        <div style="font-size:.6rem;color:var(--text-muted)">27001 Certified</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:8px;padding:.4rem .7rem;text-align:center">
+        <div style="font-size:.65rem;color:#fb923c;font-weight:700">RBI</div>
+        <div style="font-size:.6rem;color:var(--text-muted)">Compliant</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── FOOTER ─────────────── -->
+<footer style="background:rgba(0,0,0,.3);padding:3rem 1.25rem 1.5rem;position:relative;z-index:1">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:2rem;margin-bottom:2.5rem">
+
+      <!-- Brand -->
+      <div style="grid-column:span 1">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+          <div style="width:30px;height:30px;background:linear-gradient(135deg,#ff914d,#e86d2e);border-radius:7px;display:flex;align-items:center;justify-content:center">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+          </div>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:.95rem">Study<span style="color:var(--accent)">N</span>Pay</span>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);line-height:1.6;margin-bottom:1rem">Making education accessible with simple and flexible loans</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <div class="social-icon">f</div>
+          <div class="social-icon">in</div>
+          <div class="social-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          </div>
+          <div class="social-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="var(--bg-mid)"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="var(--bg-mid)" stroke-width="2"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.9rem;color:#fff">Company</div>
+        <a class="footer-link">About Us</a>
+        <a class="footer-link">Careers</a>
+        <a class="footer-link">Blog</a>
+        <a class="footer-link">Contact Us</a>
+      </div>
+
+      <!-- Loans -->
+      <div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.9rem;color:#fff">Loans</div>
+        <a class="footer-link">Education Loan</a>
+        <a class="footer-link">Student Loan</a>
+        <a class="footer-link">Loan Against Property</a>
+        <a class="footer-link">All Loan Options</a>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.9rem;color:#fff">Support</div>
+        <a class="footer-link">FAQ</a>
+        <a class="footer-link">Help Center</a>
+        <a class="footer-link">Privacy Policy</a>
+        <a class="footer-link">Terms &amp; Conditions</a>
+      </div>
+
+      <!-- Download -->
+      <div>
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:.9rem;color:#fff">Download App</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div style="background:rgba(255,255,255,.07);border:1px solid var(--card-border);border-radius:9px;padding:.6rem .9rem;display:flex;align-items:center;gap:.5rem;cursor:pointer;transition:background .2s" onmouseenter="this.style.background='rgba(255,255,255,.12)'" onmouseleave="this.style.background='rgba(255,255,255,.07)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#1c9c3e"/><path d="M5 8.5l5.5 5.5 8.5-8.5" stroke="white" stroke-width="2"/><text x="3" y="21" font-size="5" fill="white" font-family="sans-serif">Google Play</text></svg>
+            <div><div style="font-size:.58rem;color:var(--text-muted)">GET IT ON</div><div style="font-size:.8rem;font-weight:700">Google Play</div></div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border:1px solid var(--card-border);border-radius:9px;padding:.6rem .9rem;display:flex;align-items:center;gap:.5rem;cursor:pointer;transition:background .2s" onmouseenter="this.style.background='rgba(255,255,255,.12)'" onmouseleave="this.style.background='rgba(255,255,255,.07)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#555"/><path d="M12 4a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM8 13h8l2 7H6l2-7z" fill="white"/></svg>
+            <div><div style="font-size:.58rem;color:var(--text-muted)">Download on the</div><div style="font-size:.8rem;font-weight:700">App Store</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:1.25rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem">
+      <p style="font-size:.75rem;color:var(--text-muted)">© 2025 StudyNPay. All rights reserved.</p>
+      <p style="font-size:.75rem;color:var(--text-muted)">Made with ❤️ for students</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ─────────────── OTP MODAL ─────────────── -->
+<div class="otp-overlay" id="otp-overlay" onclick="handleOverlayClick(event)">
+  <div class="otp-box">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="width:56px;height:56px;background:rgba(255,145,77,.15);border:2px solid rgba(255,145,77,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.06 6.06l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.82 16.21z"/></svg>
+      </div>
+      <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:.35rem">Verify Phone Number</h3>
+      <p style="font-size:.82rem;color:var(--text-secondary)">We sent a 4-digit OTP to <span style="color:#fff;font-weight:600" id="otp-phone-display">+91 98765 43210</span></p>
+      <p style="font-size:.73rem;color:var(--text-muted);margin-top:.25rem">(Hint: use <strong style="color:var(--accent)">1234</strong>)</p>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:.75rem;margin-bottom:1.25rem">
+      <input class="otp-input" id="otp-1" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,'otp-2')" onkeydown="otpBack(event,this,'')"/>
+      <input class="otp-input" id="otp-2" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,'otp-3')" onkeydown="otpBack(event,this,'otp-1')"/>
+      <input class="otp-input" id="otp-3" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,'otp-4')" onkeydown="otpBack(event,this,'otp-2')"/>
+      <input class="otp-input" id="otp-4" maxlength="1" type="text" inputmode="numeric" oninput="otpNext(this,'')" onkeydown="otpBack(event,this,'otp-3')"/>
+    </div>
+
+    <div id="otp-error" style="text-align:center;font-size:.78rem;color:var(--error);margin-bottom:.75rem;min-height:1.1em"></div>
+
+    <div style="display:flex;gap:.75rem;flex-direction:column">
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="verifyOTP()">Verify OTP</button>
+      <button class="btn-ghost" style="width:100%;justify-content:center" onclick="closeOTP()">Cancel</button>
+    </div>
+    <p style="text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:.85rem">
+      Didn't get it? <span style="color:var(--accent);cursor:pointer;font-weight:600" onclick="showToast('📲','OTP resent!')">Resend OTP</span>
+    </p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span class="toast-msg" id="toast-msg">Message here</span>
+</div>
+
+<!-- ─────────────── SCRIPTS ─────────────── -->
+<script>
+/* ── STEPS DATA ── */
+const steps=[
+  {label:'Basic Details'},
+  {label:'Education Details'},
+  {label:'Loan Requirements'},
+  {label:'Loan Benefits'},
+  {label:'Payment'}
+];
+let currentStep=1;
+
+/* ── BUILD PROGRESS ── */
+function buildProgress(){
+  const cont=document.getElementById('progress-steps');
+  cont.innerHTML='';
+  steps.forEach((s,i)=>{
+    const n=i+1;
+    const isDone=n<currentStep;
+    const isActive=n===currentStep;
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;flex-direction:column;align-items:center;flex-shrink:0;cursor:pointer;min-width:56px;max-width:80px;padding:0 2px';
+    wrap.onclick=()=>goToStep(n);
+    const circle=document.createElement('div');
+    circle.className='step-circle'+(isActive?' active':isDone?' done':'');
+    if(isDone){circle.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>'}
+    else{circle.textContent=n}
+    const lbl=document.createElement('div');
+    lbl.className='step-label'+(isActive?' active':isDone?' done':'');
+    lbl.textContent=s.label;
+    wrap.appendChild(circle);wrap.appendChild(lbl);
+    cont.appendChild(wrap);
+    if(i<steps.length-1){
+      const line=document.createElement('div');
+      line.className='step-line';
+      line.style.cssText='flex:1;min-width:12px;align-self:flex-start;margin-top:18px';
+      const fill=document.createElement('div');
+      fill.className='step-line-fill';
+      fill.style.width=isDone?'100%':'0%';
+      line.appendChild(fill);
+      cont.appendChild(line);
+    }
+  });
+}
+buildProgress();
+
+/* ── STEP NAVIGATION ── */
+function updateStepHeader(step){
+  const titles=['Basic Details','Education Details','Loan Requirements','Loan Benefits','Payment'];
+  const subtitles=["Let's start with some basic information about you.","Tell us about your educational background and goals.","Set your loan preferences.","Understand your benefits.","Complete your payment."];
+  document.getElementById('step-header').innerHTML=`<div style="font-size:.75rem;color:var(--accent);font-weight:700;margin-bottom:.3rem;letter-spacing:.04em">STEP ${step} OF 5</div><h2 style="font-size:1.3rem;font-weight:800;margin-bottom:.25rem">${titles[step-1]}</h2><p style="font-size:.83rem;color:var(--text-secondary);margin-bottom:1.6rem">${subtitles[step-1]}</p>`;
+  const hb=document.getElementById('hero-step-badge');
+  if(hb)hb.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> STEP ${step} OF 5`;
+}
+function goToStep(n){
+  if(n===currentStep)return;
+  if(n===5)buildReview();
+  document.getElementById('step-'+currentStep).classList.remove('active-step');
+  currentStep=n;
+  document.getElementById('step-'+n).classList.add('active-step');
+  updateStepHeader(n);
+  buildProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* goToNextStep is defined later after saveToServer */
+
+/* ── EMI CALC ── */
+function calcEMI(p,rAnnual,years){
+  const r=rAnnual/12/100;
+  const n=years*12;
+  if(r===0)return p/n;
+  return p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+}
+function fmtINR(n){
+  return '₹'+Math.round(n).toLocaleString('en-IN');
+}
+function fmtLoanINR(n){
+  if(n>=10000000)return '₹'+(n/10000000).toFixed(2)+' Cr';
+  if(n>=100000)return '₹'+(n/100000).toFixed(0)+','+('00000'+(n%100000)).slice(-5).replace(/(\d{2})(\d{3})/,'$1,$2').replace(/^,/,'');
+  return '₹'+n.toLocaleString('en-IN');
+}
+// Better INR formatting
+function toINR(n){
+  n=Math.round(n);
+  const s=n.toString();
+  if(s.length<=3)return '₹'+s;
+  const last3=s.slice(-3);
+  const rest=s.slice(0,-3);
+  return '₹'+rest.replace(/\B(?=(\d{2})+(?!\d))/g,',')+','+last3;
+}
+
+function updateSummary(){
+  let amount=parseInt(document.getElementById('loan-amount-input')?.value||1200000);
+  if(isNaN(amount))amount=1200000;
+  const tenureEl=document.getElementById('sb-tenure');
+  const tenure=tenureEl?parseInt(tenureEl.value):15;
+  const rateEl=document.getElementById('sb-interest-rate');
+  const rate=rateEl?parseFloat(rateEl.value):10.49;
+  const loanTypeEl=document.getElementById('sb-loan-type');
+  const loanType=loanTypeEl?loanTypeEl.value:'Education Loan';
+  // sync form loan-type dropdown if present
+  const formLT=document.getElementById('loan-type');
+  if(formLT&&loanType)formLT.value=loanType;
+  const emi=calcEMI(amount,rate,tenure);
+  document.getElementById('emi-display').textContent=toINR(emi)+' ';
+  document.getElementById('summary-amount').textContent=toINR(amount);
+  if(document.getElementById('s-rate-label'))document.getElementById('s-rate-label').textContent=rate.toFixed(2)+'% p.a.';
+  if(document.getElementById('s-tenure'))document.getElementById('s-tenure').textContent=tenure+' Years';
+  if(document.getElementById('amount-label'))document.getElementById('amount-label').textContent=toINR(amount);
+  if(document.getElementById('tenure-label'))document.getElementById('tenure-label').textContent=tenure+' years';
+  if(document.getElementById('amount-slider'))document.getElementById('amount-slider').value=amount;
+  if(document.getElementById('sidebar-amount'))document.getElementById('sidebar-amount').value=amount;
+  if(document.getElementById('sidebar-amount-label'))document.getElementById('sidebar-amount-label').textContent=toINR(amount);
+}
+function syncSlider(){
+  const v=document.getElementById('amount-slider').value;
+  document.getElementById('loan-amount-input').value=v;
+  updateSummary();
+}
+function sidebarSlider(){
+  const v=document.getElementById('sidebar-amount').value;
+  if(document.getElementById('loan-amount-input'))document.getElementById('loan-amount-input').value=v;
+  updateSummary();
+}
+updateSummary();
+
+/* ── VALIDATION ── */
+function setField(id,valid,show=true){
+  const fw=document.getElementById('fw-'+id);
+  if(!fw)return;
+  if(!show){fw.classList.remove('has-error','valid');return}
+  fw.classList.toggle('has-error',!valid);
+  fw.classList.toggle('valid',valid);
+}
+function validateName(){
+  const v=document.getElementById('full-name').value.trim();
+  setField('name',v.length>=2);
+}
+function validateEmail(){
+  const v=document.getElementById('email').value;
+  setField('email',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+}
+function validatePhone(){
+  const v=document.getElementById('phone').value.replace(/\s/g,'');
+  setField('phone',/^(\+91)?[6-9]\d{9}$/.test(v));
+}
+function validateDOB(){
+  const v=document.getElementById('dob').value;
+  if(!v){setField('dob',false);return}
+  const dob=new Date(v);
+  const age=(Date.now()-dob)/(365.25*24*3600*1000);
+  const ok=age>=18;
+  setField('dob',ok);
+  document.getElementById('dob-err').textContent=ok?'':'You must be at least 18 years old';
+}
+function validateCity(){
+  const v=document.getElementById('city').value.trim();
+  setField('city',v.length>=2);
+}
+function validatePAN(){
+  const v=document.getElementById('pan').value;
+  setField('pan',/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v));
+}
+function formatAadhaar(el){
+  let v=el.value.replace(/\D/g,'').slice(0,12);
+  el.value=v.replace(/(\d{4})(?=\d)/g,'$1 ').trim();
+}
+function validateStep1(){
+  validateName();validateEmail();validatePhone();validateDOB();validateCity();validatePAN();
+  const name=document.getElementById('full-name').value.trim();
+  const email=document.getElementById('email').value;
+  const phone=document.getElementById('phone').value.replace(/\s/g,'');
+  const dob=document.getElementById('dob').value;
+  const city=document.getElementById('city').value.trim();
+  const pan=document.getElementById('pan').value;
+  const age=dob?(Date.now()-new Date(dob))/(365.25*24*3600*1000):0;
+  const ok=name.length>=2&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&/^(\+91)?[6-9]\d{9}$/.test(phone)&&age>=18&&city.length>=2&&/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan);
+  if(!ok)showToast('⚠️','Please fix the highlighted errors.');
+  return ok;
+}
+
+/* ── PHP SUBMIT ── */
+let sessionId=localStorage.getItem('snp_session')||'';
+async function saveToServer(payload){
+  try{
+    if(sessionId)payload.session_id=sessionId;
+    const r=await fetch('submit.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(d.success&&d.session_id){sessionId=d.session_id;localStorage.setItem('snp_session',sessionId);}
+    return d;
+  }catch(e){console.warn('Server save failed:',e);return{success:false};}
+}
+function collectStep1(){
+  return{
+    step1:{
+      loan_type:document.getElementById('loan-type')?.value,
+      full_name:document.getElementById('full-name')?.value,
+      gender:document.getElementById('gender')?.value,
+      dob:document.getElementById('dob')?.value,
+      email:document.getElementById('email')?.value,
+      phone:document.getElementById('phone')?.value,
+      city:document.getElementById('city')?.value,
+      state:document.getElementById('state')?.value,
+      pan:document.getElementById('pan')?.value,
+      aadhaar:document.getElementById('aadhaar')?.value,
+      offer_letter:document.getElementById('offer-letter')?.value,
+    },
+    loan_summary:{
+      loan_amount:document.getElementById('loan-amount-input')?.value||1200000,
+      interest_rate:document.getElementById('sb-interest-rate')?.value||'10.49',
+      tenure:document.getElementById('sb-tenure')?.value||'15',
+      emi:Math.round(calcEMI(
+        parseInt(document.getElementById('loan-amount-input')?.value||1200000),
+        parseFloat(document.getElementById('sb-interest-rate')?.value||10.49),
+        parseInt(document.getElementById('sb-tenure')?.value||15)
+      )),
+    },
+    current_step:1,
+  };
+}
+function collectStep2(){
+  return{
+    step2:{
+      course:document.getElementById('course')?.value,
+      stream_12:document.getElementById('stream-12')?.value,
+      percentage_10:document.getElementById('pct-10')?.value,
+      percentage_12:document.getElementById('pct-12')?.value,
+      entrance_exam:document.getElementById('entrance-exam')?.value,
+    },
+    current_step:2,
+  };
+}
+
+async function goToNextStep(){
+  if(!validateStep1())return;
+  const btn=document.getElementById('save-next-btn');
+  btn.disabled=true;btn.textContent='Saving…';
+  const res=await saveToServer(collectStep1());
+  btn.disabled=false;btn.innerHTML='Save &amp; Next <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  if(res.success)showToast('✅','Basic details saved!');
+  goToStep(2);
+}
+
+/* ── Step 2 validation ── */
+function validateCourse(){setField('course',!!document.getElementById('course').value)}
+function validateStream12(){setField('stream12',!!document.getElementById('stream-12').value)}
+function validatePct(id,fwId){
+  const v=parseFloat(document.getElementById(id).value);
+  const fw=document.getElementById(fwId);
+  if(!fw)return;
+  const ok=!isNaN(v)&&v>=1&&v<=100;
+  fw.classList.toggle('has-error',!ok);
+  fw.classList.toggle('valid',ok);
+}
+function validateStep2(){
+  validateCourse();validateStream12();
+  const ok=!!document.getElementById('course').value&&!!document.getElementById('stream-12').value;
+  if(!ok)showToast('⚠️','Please select your course and stream.');
+  return ok;
+}
+async function saveStep2AndNext(){
+  if(!validateStep2())return;
+  const res=await saveToServer({...collectStep1(),...collectStep2(),current_step:2});
+  if(res.success)showToast('✅','Education details saved!');
+  goToStep(3);
+}
+async function saveStep2Draft(){
+  await saveToServer({...collectStep1(),...collectStep2(),current_step:2});
+  showToast('💾','Progress saved! Continue anytime.');
+}
+
+/* ── OTP ── */
+function openOTP(){
+  document.getElementById('otp-phone-display').textContent=document.getElementById('phone').value||'+91 98765 43210';
+  ['otp-1','otp-2','otp-3','otp-4'].forEach(id=>{document.getElementById(id).value=''});
+  document.getElementById('otp-error').textContent='';
+  document.getElementById('otp-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('otp-1').focus(),300);
+}
+function closeOTP(){document.getElementById('otp-overlay').classList.remove('open')}
+function handleOverlayClick(e){if(e.target===document.getElementById('otp-overlay'))closeOTP()}
+function otpNext(el,nextId){
+  el.value=el.value.replace(/\D/g,'').slice(-1);
+  if(el.value&&nextId)document.getElementById(nextId).focus();
+}
+function otpBack(e,el,prevId){
+  if(e.key==='Backspace'&&!el.value&&prevId)document.getElementById(prevId).focus();
+}
+function verifyOTP(){
+  const otp=['otp-1','otp-2','otp-3','otp-4'].map(id=>document.getElementById(id).value).join('');
+  if(otp==='1234'){
+    closeOTP();
+    document.getElementById('phone-status').innerHTML='<span class="badge-verified"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Verified</span>';
+    showToast('✅','Phone number verified successfully!');
+  } else {
+    document.getElementById('otp-error').textContent='Incorrect OTP. Please try again.';
+    ['otp-1','otp-2','otp-3','otp-4'].forEach(id=>{
+      const el=document.getElementById(id);
+      el.style.borderColor='var(--error)';
+      setTimeout(()=>el.style.borderColor='',1200);
+    });
+  }
+}
+
+/* ── REVIEW ── */
+function buildReview(){
+  const data={
+    'Full Name':document.getElementById('full-name')?.value,
+    'Loan Type':document.getElementById('loan-type')?.value,
+    'Gender':document.getElementById('gender')?.value,
+    'Date of Birth':document.getElementById('dob')?.value,
+    'Email':document.getElementById('email')?.value,
+    'Phone':document.getElementById('phone')?.value,
+    'City':document.getElementById('city')?.value,
+    'State':document.getElementById('state')?.value,
+    'PAN Card':document.getElementById('pan')?.value,
+    'Aadhaar':document.getElementById('aadhaar')?.value||'Not provided',
+    'Offer Letter':document.getElementById('offer-letter')?.value,
+  };
+  const cont=document.getElementById('review-content');
+  cont.innerHTML='';
+  Object.entries(data).forEach(([k,v])=>{
+    if(!v)return;
+    cont.innerHTML+=`<div class="s5-sum-row"><span class="s5-sum-key" style="min-width:120px">${k}</span><span class="s5-sum-val" style="text-align:right;word-break:break-all">${v}</span></div>`;
+  });
+}
+function collectAllData(){
+  return {
+    full_name: document.getElementById('full-name')?.value||'',
+    email: document.getElementById('email')?.value||'',
+    phone: document.getElementById('phone')?.value||'',
+    city: document.getElementById('city')?.value||'',
+    state: document.getElementById('state')?.value||'',
+    course: document.getElementById('course')?.value||'',
+    college: document.getElementById('college')?.value||'',
+    education_status: document.getElementById('stream-12')?.value||'',
+    loan_amount: parseFloat(document.getElementById('loan-amount-input')?.value)||0,
+    tenure: parseInt(document.getElementById('tenure-slider')?.value)||15,
+    interest_rate: parseFloat(document.getElementById('sb-interest-rate')?.value)||10.49
+  };
+}
+
+
+async function handleSubmit(){
+
+  const d = collectAllData(); // your form data
+
+  const options = {
+    key: "rzp_live_SmBPKX9X3eRyAT", // your live key
+    amount: 100, 
+    currency: "INR",
+    name: "StudyNPay",
+    description: "Application Fee",
+
+    prefill: {
+      name: d.full_name || "",
+      email: d.email || "",
+      contact: d.phone || ""
+    },
+
+    theme: {
+      color: "#ff914d"
+    },
+
+    handler: async function (response){
+
+      console.log("PAYMENT SUCCESS:", response);
+
+      // 🔥 CREATE USER AFTER PAYMENT
+      const res = await fetch('api/create_student.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      });
+
+      const data = await res.json();
+
+      if(data.success){
+
+        sessionStorage.setItem('newUser', JSON.stringify({
+          username: data.username,
+          password: data.password
+        }));
+
+        window.location.href = "index.html?new=1";
+
+      } else {
+        alert("Error creating account");
+      }
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+
+/* ── PAYMENT HELPERS ── */
+function selectPayMethod(el,type){
+  document.querySelectorAll('.s5-pay-method').forEach(m=>m.classList.remove('selected'));
+  el.classList.add('selected');
+  ['upi','card','netbanking','wallet','emi','qr'].forEach(t=>{
+    const p=document.getElementById('panel-'+t);
+    if(p)p.style.display=t===type?'block':'none';
+  });
+}
+function toggleUPI(el){
+  document.querySelectorAll('.s5-upi-badge').forEach(b=>{if(b.parentElement===el.parentElement)b.classList.remove('sel')});
+  el.classList.add('sel');
+}
+function fmtCard(el){
+  let v=el.value.replace(/\D/g,'').slice(0,16);
+  el.value=v.replace(/(.{4})/g,'$1  ').trim();
+}
+function fmtExpiry(el){
+  let v=el.value.replace(/\D/g,'').slice(0,4);
+  if(v.length>2)v=v.slice(0,2)+' / '+v.slice(2);
+  el.value=v;
+}
+/* Tab switcher for step 5 */
+function switchTab(el,type){
+  document.querySelectorAll('.s5-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.s5-panel').forEach(p=>p.style.display='none');
+  const panel=document.getElementById('tab-'+type);
+  if(panel)panel.style.display='block';
+  if(type==='qr')startQRTimer();
+}
+/* UPI app selector */
+function selUpiApp(el){
+  el.closest('.s5-upi-apps').querySelectorAll('.s5-upi-app').forEach(a=>a.classList.remove('sel'));
+  el.classList.add('sel');
+}
+/* Bank selector */
+function selBank(el){
+  el.closest('.s5-bank-grid').querySelectorAll('.s5-bank-item').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  showToast('🏦','Bank selected: '+el.querySelector('.bname').textContent);
+}
+/* Wallet selector */
+function selWallet(el){
+  el.closest('.s5-wallet-list').querySelectorAll('.s5-wallet-item').forEach(w=>w.classList.remove('sel'));
+  el.classList.add('sel');
+}
+/* QR countdown */
+let qrInterval;
+function startQRTimer(){
+  clearInterval(qrInterval);
+  let secs=599;
+  const el=document.getElementById('qr-countdown');
+  if(!el)return;
+  qrInterval=setInterval(()=>{
+    secs--;
+    if(secs<=0){clearInterval(qrInterval);if(el)el.textContent='Expired';return;}
+    const m=Math.floor(secs/60).toString().padStart(2,'0');
+    const s=(secs%60).toString().padStart(2,'0');
+    if(el)el.textContent=m+':'+s;
+  },1000);
+}
+
+
+let toastTimer;
+function showToast(icon,msg){
+  clearTimeout(toastTimer);
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast').classList.add('show');
+  toastTimer=setTimeout(()=>document.getElementById('toast').classList.remove('show'),3500);
+}
+
+/* ── AUTH CHECK ── */
+(async function(){
+  try{
+    const r=await fetch('auth/check_auth.php',{headers:{'Accept':'application/json'}});
+    const d=await r.json();
+    if(!d.auth)window.location.href='login.html';
+  }catch(e){/* server might not be PHP, skip */}
+})();
+
+document.getElementById('hamburger').addEventListener('click',()=>{
+  document.getElementById('mobile-menu').classList.toggle('open');
+});
+
+/* ── RESPONSIVE NAV ── */
+function handleResize(){
+  const w=window.innerWidth;
+  const dn=document.getElementById('desktop-nav');
+  const hb=document.getElementById('hamburger');
+  const myDesk=document.getElementById('my-app-btn-desk');
+  if(w<900){
+    dn.style.display='none';
+    hb.style.display='block';
+    myDesk.style.display='none';
+  } else {
+    dn.style.display='flex';
+    hb.style.display='none';
+    myDesk.style.display='flex';
+    document.getElementById('mobile-menu').classList.remove('open');
+  }
+}
+handleResize();
+window.addEventListener('resize',handleResize);
+
+/* ── SIDEBAR RESPONSIVE handled by CSS ── */
+
+/* ── Init validations ── */
+validateName();validateEmail();validatePhone();validateDOB();validateCity();validatePAN();
+</script>
+</body>
+</html>
