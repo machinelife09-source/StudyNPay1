@@ -2102,14 +2102,7 @@ function showToast(icon,msg){
   toastTimer=setTimeout(()=>document.getElementById('toast').classList.remove('show'),3500);
 }
 
-/* ── AUTH CHECK ── */
-(async function(){
-  try{
-    const r=await fetch('auth/check_auth.php',{headers:{'Accept':'application/json'}});
-    const d=await r.json();
-    if(!d.auth)window.location.href='login.html';
-  }catch(e){/* server might not be PHP, skip */}
-})();
+
 
 document.getElementById('hamburger').addEventListener('click',()=>{
   document.getElementById('mobile-menu').classList.toggle('open');
