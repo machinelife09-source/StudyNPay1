@@ -1818,7 +1818,7 @@ let sessionId=localStorage.getItem('snp_session')||'';
 async function saveToServer(payload){
   try{
     if(sessionId)payload.session_id=sessionId;
-    const r=await fetch('submit.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const r=await fetch('http://46.202.167.64/api/save_application.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const d=await r.json();
     if(d.success&&d.session_id){sessionId=d.session_id;localStorage.setItem('snp_session',sessionId);}
     return d;
